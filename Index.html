@@ -1,0 +1,1348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+     <title>UG Billing</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    
+    body { 
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+      margin: 0; 
+      padding: 0; 
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+    }
+    
+    .container { 
+      max-width: 1200px; 
+      margin: 20px auto; 
+      background: rgba(255, 255, 255, 0.95); 
+      padding: 32px; 
+      border-radius: 20px; 
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    h1, .business-info { text-align: center; }
+    .business-info { 
+      margin-bottom: 24px; 
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 24px;
+      border-radius: 16px;
+      color: white;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    }
+    
+    .business-info h2 {
+      margin: 0 0 8px 0;
+      font-size: 2.2em;
+      font-weight: 700;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+    
+    .business-info div {
+      font-size: 1.1em;
+      margin: 4px 0;
+      opacity: 0.9;
+    }
+    
+    .logo {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 16px;
+      font-size: 3em;
+      text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    }
+    
+    .logo svg {
+      width: 48px;
+      height: 48px;
+      display: block;
+    }
+    
+    form { 
+      display: flex; 
+      flex-wrap: wrap; 
+      gap: 16px; 
+      margin-bottom: 32px;
+      background: #f8f9fa;
+      padding: 24px;
+      border-radius: 16px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+    }
+    
+    form input, form select, form textarea { 
+      flex: 1 1 200px; 
+      padding: 12px 16px; 
+      border: 2px solid #e9ecef; 
+      border-radius: 12px; 
+      font-size: 14px;
+      transition: all 0.3s ease;
+      background: white;
+    }
+    
+    form input:focus, form select:focus, form textarea:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+      transform: translateY(-2px);
+    }
+    
+    form button { 
+      padding: 12px 24px; 
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
+    }
+    
+    form button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4);
+    }
+    
+    .actions { display: flex; gap: 8px; }
+    
+    table { 
+      width: 100%; 
+      border-collapse: collapse; 
+      margin-bottom: 24px;
+      background: white;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    }
+    
+    th, td { 
+      border: none; 
+      padding: 16px 12px; 
+      text-align: left; 
+    }
+    
+    th { 
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      font-weight: 600;
+      font-size: 14px;
+    }
+    
+    tr:nth-child(even) { 
+      background: #f8f9fa; 
+    }
+    
+    tr:hover {
+      background: #e3f2fd;
+      transform: scale(1.01);
+      transition: all 0.2s ease;
+    }
+    
+    tr.selected { background: #e0f7fa; }
+    
+    .search-bar { 
+      margin-bottom: 24px;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+    
+    .search-bar input {
+      flex: 1;
+      padding: 12px 16px;
+      border: 2px solid #e9ecef;
+      border-radius: 12px;
+      font-size: 14px;
+      transition: all 0.3s ease;
+    }
+    
+    .search-bar input:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+    
+    .print-btn { 
+      background: linear-gradient(135deg, #28a745 0%, #20c997 100%); 
+      color: #fff; 
+      border: none; 
+      padding: 12px 20px; 
+      border-radius: 12px; 
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 16px rgba(40, 167, 69, 0.3);
+    }
+    
+    .print-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(40, 167, 69, 0.4);
+    }
+    
+    /* Print Preview Modal Styles */
+    .print-preview-modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(5px);
+    }
+    
+    .print-preview-content {
+      position: relative;
+      background-color: #fff;
+      margin: 20px auto;
+      padding: 20px;
+      width: 90%;
+      max-width: 500px;
+      max-height: 80vh;
+      border-radius: 16px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+      overflow-y: auto;
+    }
+    
+    .print-preview-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 2px solid #e9ecef;
+    }
+    
+    .print-preview-header h3 {
+      margin: 0;
+      color: #333;
+      font-size: 1.3em;
+      font-weight: 700;
+    }
+    
+    .print-preview-close {
+      background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 16px rgba(220, 53, 69, 0.3);
+    }
+    
+    .print-preview-close:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(220, 53, 69, 0.4);
+    }
+    
+    .print-preview-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 20px;
+      justify-content: center;
+    }
+    
+    .print-preview-btn {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    }
+    
+    .print-preview-print {
+      background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+      color: white;
+      box-shadow: 0 4px 16px rgba(40, 167, 69, 0.3);
+    }
+    
+    .print-preview-print:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(40, 167, 69, 0.4);
+    }
+    
+    .print-preview-cancel {
+      background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
+      color: white;
+      box-shadow: 0 4px 16px rgba(108, 117, 125, 0.3);
+    }
+    
+    .print-preview-cancel:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(108, 117, 125, 0.4);
+    }
+    
+    .edit-btn, .delete-btn { 
+      border: none; 
+      padding: 8px 16px; 
+      border-radius: 8px; 
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+    
+    .edit-btn { 
+      background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%); 
+      color: #fff;
+      box-shadow: 0 4px 16px rgba(255, 193, 7, 0.3);
+    }
+    
+    .edit-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(255, 193, 7, 0.4);
+    }
+    
+    .delete-btn { 
+      background: linear-gradient(135deg, #dc3545 0%, #c82333 100%); 
+      color: #fff;
+      box-shadow: 0 4px 16px rgba(220, 53, 69, 0.3);
+    }
+    
+    .delete-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(220, 53, 69, 0.4);
+    }
+    
+    /* Bluetooth Printer Styles */
+    .bluetooth-section {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border: none;
+      border-radius: 20px;
+      padding: 24px;
+      margin-bottom: 32px;
+      box-shadow: 0 12px 32px rgba(102, 126, 234, 0.2);
+      color: white;
+    }
+    .bluetooth-section h3 {
+      margin: 0 0 16px 0;
+      color: white;
+      font-size: 1.3em;
+      font-weight: 700;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+    .bluetooth-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+    .bluetooth-btn {
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      padding: 12px 20px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+    }
+    .bluetooth-btn:hover { 
+      background: rgba(255, 255, 255, 0.3);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    }
+    .bluetooth-btn:disabled {
+      background: rgba(255, 255, 255, 0.1);
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+    .bluetooth-btn.connected {
+      background: rgba(40, 167, 69, 0.8);
+      border-color: #28a745;
+    }
+    .bluetooth-btn.connected:hover {
+      background: rgba(40, 167, 69, 0.9);
+    }
+    .device-select {
+      padding: 12px 16px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 12px;
+      min-width: 220px;
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      font-size: 14px;
+      backdrop-filter: blur(10px);
+    }
+    .device-select option {
+      background: #667eea;
+      color: white;
+    }
+    .connection-status {
+      padding: 12px 20px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 600;
+      backdrop-filter: blur(10px);
+      border: 2px solid rgba(255, 255, 255, 0.2);
+    }
+    .status-disconnected {
+      background: rgba(220, 53, 69, 0.8);
+      color: white;
+      border-color: #dc3545;
+    }
+    .status-connected {
+      background: rgba(40, 167, 69, 0.8);
+      color: white;
+      border-color: #28a745;
+    }
+    .status-scanning {
+      background: rgba(255, 193, 7, 0.8);
+      color: white;
+      border-color: #ffc107;
+    }
+    .bluetooth-print-btn {
+      background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-left: 4px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 16px rgba(23, 162, 184, 0.3);
+    }
+    .bluetooth-print-btn:hover { 
+      background: linear-gradient(135deg, #138496 0%, #117a8b 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(23, 162, 184, 0.4);
+    }
+    .bluetooth-print-btn:disabled {
+      background: #6c757d;
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+    
+    @media print {
+      body * { visibility: hidden; }
+      #print-area, #print-area * { visibility: visible; }
+      #print-area { position: absolute; left: 0; top: 0; width: 100vw; }
+      .logo { margin-bottom: 8px; }
+      #print-area .logo { margin-bottom: 8px; }
+      #print-area h2 { margin: 0; }
+      #print-area > div { page-break-inside: avoid; }
+      #print-area * { 
+        box-shadow: none !important; 
+        text-shadow: none !important; 
+        background: none !important; 
+        border-radius: 0 !important;
+        backdrop-filter: none !important;
+      }
+      h1 { display: none !important; }
+    }
+    /* Animations and Effects */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .container {
+      animation: fadeInUp 0.8s ease-out;
+    }
+    
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    
+    ::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 10px;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 10px;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+      background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+    }
+    
+    /* Focus effects for inputs */
+    #bill-customer-name:focus, #bill-customer-contact:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+      transform: translateY(-2px);
+    }
+    
+    /* Responsive styles */
+    @media (max-width: 600px) {
+      .container { 
+        padding: 16px; 
+        margin: 10px;
+        border-radius: 16px;
+      }
+      form { 
+        flex-direction: column; 
+        gap: 12px; 
+        padding: 20px;
+      }
+      form input, form select, form textarea { 
+        flex: 1 1 100%; 
+        min-width: 0; 
+      }
+      table, thead, tbody, th, td, tr { 
+        display: block; 
+        width: 100%; 
+      }
+      thead { display: none; }
+      tr { 
+        margin-bottom: 16px; 
+        border-bottom: 1px solid #eee; 
+        padding: 12px;
+        border-radius: 12px;
+        background: white;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+      }
+      td { 
+        border: none; 
+        padding: 8px 4px; 
+        position: relative; 
+      }
+
+      .actions { 
+        flex-direction: row; 
+        justify-content: flex-start; 
+        gap: 8px;
+        margin-top: 8px;
+      }
+      .bluetooth-controls {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+      }
+      .device-select {
+        min-width: auto;
+      }
+      .business-info {
+        padding: 20px;
+        margin-bottom: 20px;
+      }
+      .business-info h2 {
+        font-size: 1.8em;
+      }
+      .bluetooth-section {
+        padding: 20px;
+        margin-bottom: 24px;
+      }
+      
+      /* Mobile print preview adjustments */
+      .print-preview-content {
+        width: 95%;
+        margin: 10px auto;
+        max-height: 85vh;
+        padding: 15px;
+      }
+      
+      .print-preview-actions {
+        flex-direction: column;
+        gap: 8px;
+      }
+      
+      .print-preview-btn {
+        width: 100%;
+        padding: 14px 24px;
+      }
+    }
+    /* Responsive print invoice */
+    @media print {
+      #print-area {
+        max-width: 100vw;
+        padding: 0;
+      }
+      #print-area > div {
+        max-width: 100vw;
+        margin: 0 auto;
+        font-size: 1em;
+      }
+      #print-area table { font-size: 1em; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="business-info">
+      <div class="logo" style="font-size:2.5em;">📚</div>
+      <h2>Akram Book Depot</h2>
+      <div>Main Bazaar Raiwind</div>
+      <div>Contact: 03364626364</div>
+    </div>
+    
+    <!-- Bluetooth Printer Section -->
+    <div class="bluetooth-section">
+      <h3>🖨️ Bluetooth Printer</h3>
+      <div class="bluetooth-controls">
+        <button id="scan-bluetooth" class="bluetooth-btn">Scan for Devices</button>
+        <select id="bluetooth-devices" class="device-select" disabled>
+          <option value="">Select Bluetooth Device</option>
+        </select>
+        <button id="connect-bluetooth" class="bluetooth-btn" disabled>Connect</button>
+        <button id="disconnect-bluetooth" class="bluetooth-btn" disabled>Disconnect</button>
+        <div id="connection-status" class="connection-status status-disconnected">Disconnected</div>
+      </div>
+      <div style="font-size: 0.9em; color: #6c757d;">
+        <strong>Note:</strong> Bluetooth printing requires HTTPS and user permission. Make sure your printer is in pairing mode.
+      </div>
+    </div>
+    
+    <div class="customer-bill-info" style="display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-bottom:24px;justify-content:center;background: #f8f9fa;padding: 20px;border-radius: 16px;box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);">
+      <input type="text" id="bill-customer-name" placeholder="Customer Name (optional)" style="padding:12px 16px;border:2px solid #e9ecef;border-radius:12px;min-width:200px;font-size:14px;transition: all 0.3s ease;background: white;">
+      <input type="text" id="bill-customer-contact" placeholder="Customer Contact (optional)" style="padding:12px 16px;border:2px solid #e9ecef;border-radius:12px;min-width:200px;font-size:14px;transition: all 0.3s ease;background: white;">
+    </div>
+        
+    <form id="product-form">
+      <input type="hidden" id="product-id">
+      <input type="text" id="name" placeholder="Product Name" required>
+      <input type="text" id="category" placeholder="Category" required>
+      <input type="number" id="price" placeholder="Price" min="0" step="0.01" required>
+      <input type="number" id="quantity" placeholder="Quantity" min="0" required>
+      <textarea id="description" placeholder="Description (optional)"></textarea>
+      <button type="submit">Add Product</button>
+    </form>
+    <div class="search-bar">
+      <input type="text" id="search" placeholder="Search products...">
+      <button id="print-selected" class="print-btn">Print Selected</button>
+    </div>
+    <table id="product-table">
+      <thead>
+        <tr>
+          <th><input type="checkbox" id="select-all"></th>
+          <th>Name</th>
+          <th>Category</th>
+          <th>Price</th>
+          <th>Qty</th>
+          <th>Description</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Products will be rendered here -->
+      </tbody>
+    </table>
+  </div>
+  <div id="print-area" style="display:none;"></div>
+  
+  <!-- Print Preview Modal -->
+  <div id="print-preview-modal" class="print-preview-modal">
+    <div class="print-preview-content">
+      <div class="print-preview-header">
+        <h3>📄 Print Preview</h3>
+        <button class="print-preview-close" onclick="closePrintPreview()">✕</button>
+      </div>
+      <div id="print-preview-content">
+        <!-- Preview content will be inserted here -->
+      </div>
+      <div class="print-preview-actions">
+        <button class="print-preview-btn print-preview-print" onclick="confirmPrint()">🖨️ Print Receipt</button>
+        <button class="print-preview-btn print-preview-cancel" onclick="closePrintPreview()">❌ Cancel</button>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    // --- Bluetooth Printer Variables ---
+    let bluetoothDevice = null;
+    let bluetoothServer = null;
+    let bluetoothCharacteristic = null;
+    let isBluetoothConnected = false;
+
+    // --- Product Data Management ---
+    let products = JSON.parse(localStorage.getItem('products') || '[]');
+    let editingId = null;
+
+    function saveProducts() {
+      localStorage.setItem('products', JSON.stringify(products));
+    }
+
+    function renderTable(filter = '') {
+      const tbody = document.querySelector('#product-table tbody');
+      tbody.innerHTML = '';
+      let filtered = products.filter(p =>
+        p.name.toLowerCase().includes(filter) ||
+        p.category.toLowerCase().includes(filter)
+      );
+      filtered.forEach((p, i) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><input type="checkbox" class="row-select" data-id="${p.id}"></td>
+          <td>${p.name}</td>
+          <td>${p.category}</td>
+          <td>${p.price}</td>
+          <td>${p.quantity}</td>
+          <td>${p.description || ''}</td>
+          <td class="actions">
+            <button class="print-btn" data-id="${p.id}">Print</button>
+            <button class="bluetooth-print-btn" data-id="${p.id}" ${!isBluetoothConnected ? 'disabled' : ''}>BT Print</button>
+            <button class="edit-btn" data-id="${p.id}">Edit</button>
+            <button class="delete-btn" data-id="${p.id}">Delete</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function resetForm() {
+      document.getElementById('product-form').reset();
+      document.getElementById('product-id').value = '';
+      editingId = null;
+      document.querySelector('#product-form button[type="submit"]').textContent = 'Add Product';
+    }
+
+    // --- Bluetooth Functions ---
+    async function scanBluetoothDevices() {
+      try {
+        updateConnectionStatus('Scanning for devices...', 'scanning');
+        
+        // Request Bluetooth device with specific filters for printers
+        bluetoothDevice = await navigator.bluetooth.requestDevice({
+          filters: [
+            { services: ['000018f0-0000-1000-8000-00805f9b34fb'] }, // Common printer service
+            { namePrefix: 'Printer' },
+            { namePrefix: 'Thermal' },
+            { namePrefix: 'POS' },
+            { namePrefix: 'Receipt' },
+            { services: ['0000ffe0-0000-1000-8000-00805f9b34fb'] }, // Serial service
+            { services: ['0000ffe1-0000-1000-8000-00805f9b34fb'] }  // Serial characteristic
+          ],
+          optionalServices: ['0000ffe0-0000-1000-8000-00805f9b34fb', '0000ffe1-0000-1000-8000-00805f9b34fb']
+        });
+
+        // Populate device selector
+        const deviceSelect = document.getElementById('bluetooth-devices');
+        deviceSelect.innerHTML = '<option value="">Select Bluetooth Device</option>';
+        
+        if (bluetoothDevice) {
+          const option = document.createElement('option');
+          option.value = bluetoothDevice.id;
+          option.textContent = bluetoothDevice.name || bluetoothDevice.id;
+          deviceSelect.appendChild(option);
+          deviceSelect.value = bluetoothDevice.id;
+          deviceSelect.disabled = false;
+          document.getElementById('connect-bluetooth').disabled = false;
+        }
+
+        updateConnectionStatus('Device found: ' + (bluetoothDevice?.name || 'Unknown'), 'disconnected');
+        
+      } catch (error) {
+        console.error('Bluetooth scan error:', error);
+        updateConnectionStatus('Scan failed: ' + error.message, 'disconnected');
+      }
+    }
+
+    async function connectBluetooth() {
+      if (!bluetoothDevice) {
+        alert('Please scan for devices first');
+        return;
+      }
+
+      try {
+        updateConnectionStatus('Connecting...', 'scanning');
+        
+        // Connect to the device
+        bluetoothServer = await bluetoothDevice.gatt.connect();
+        
+        // Get the service (try common printer services)
+        const services = ['0000ffe0-0000-1000-8000-00805f9b34fb', '000018f0-0000-1000-8000-00805f9b34fb'];
+        let service = null;
+        
+        for (const serviceUUID of services) {
+          try {
+            service = await bluetoothServer.getPrimaryService(serviceUUID);
+            break;
+          } catch (e) {
+            console.log(`Service ${serviceUUID} not found, trying next...`);
+          }
+        }
+
+        if (!service) {
+          throw new Error('No compatible printer service found');
+        }
+
+        // Get the characteristic for writing data
+        const characteristics = ['0000ffe1-0000-1000-8000-00805f9b34fb', '000018f1-0000-1000-8000-00805f9b34fb'];
+        let characteristic = null;
+        
+        for (const charUUID of characteristics) {
+          try {
+            characteristic = await service.getCharacteristic(charUUID);
+            break;
+          } catch (e) {
+            console.log(`Characteristic ${charUUID} not found, trying next...`);
+          }
+        }
+
+        if (!characteristic) {
+          throw new Error('No compatible printer characteristic found');
+        }
+
+        bluetoothCharacteristic = characteristic;
+        isBluetoothConnected = true;
+        
+        updateConnectionStatus('Connected to ' + bluetoothDevice.name, 'connected');
+        document.getElementById('connect-bluetooth').disabled = true;
+        document.getElementById('disconnect-bluetooth').disabled = false;
+        
+        // Update print buttons
+        document.querySelectorAll('.bluetooth-print-btn').forEach(btn => btn.disabled = false);
+        
+        // Listen for disconnection
+        bluetoothDevice.addEventListener('gattserverdisconnected', onBluetoothDisconnected);
+        
+      } catch (error) {
+        console.error('Bluetooth connection error:', error);
+        updateConnectionStatus('Connection failed: ' + error.message, 'disconnected');
+      }
+    }
+
+    function disconnectBluetooth() {
+      if (bluetoothDevice && bluetoothDevice.gatt.connected) {
+        bluetoothDevice.gatt.disconnect();
+      }
+      onBluetoothDisconnected();
+    }
+
+    function onBluetoothDisconnected() {
+      isBluetoothConnected = false;
+      bluetoothDevice = null;
+      bluetoothServer = null;
+      bluetoothCharacteristic = null;
+      
+      updateConnectionStatus('Disconnected', 'disconnected');
+      document.getElementById('connect-bluetooth').disabled = false;
+      document.getElementById('disconnect-bluetooth').disabled = true;
+      
+      // Update print buttons
+      document.querySelectorAll('.bluetooth-print-btn').forEach(btn => btn.disabled = true);
+    }
+
+    function updateConnectionStatus(message, status) {
+      const statusElement = document.getElementById('connection-status');
+      statusElement.textContent = message;
+      statusElement.className = 'connection-status status-' + status;
+    }
+
+    async function printToBluetooth(ids) {
+      if (!isBluetoothConnected || !bluetoothCharacteristic) {
+        alert('Please connect to a Bluetooth printer first');
+        return;
+      }
+
+      try {
+        const toPrint = products.filter(p => ids.includes(p.id));
+        const now = new Date();
+        const dateStr = now.toLocaleDateString();
+        const timeStr = now.toLocaleTimeString();
+        const billCustomerName = document.getElementById('bill-customer-name').value.trim();
+        const billCustomerContact = document.getElementById('bill-customer-contact').value.trim();
+        
+        // Calculate total
+        let subtotal = 0;
+        toPrint.forEach(p => {
+          subtotal += (p.price * p.quantity);
+        });
+
+        // A5 Thermal Printer Formatting (48 characters width typical for thermal printers)
+        let receipt = '';
+        receipt += '\x1B\x40'; // Initialize printer
+        receipt += '\x1B\x61\x01'; // Center alignment
+        receipt += '\x1B\x21\x10'; // Double height and width
+        receipt += 'AKRAM BOOK DEPOT\n';
+        receipt += '\x1B\x21\x00'; // Normal size
+        receipt += 'MAIN BAZAAR RAIWIND\n';
+        receipt += 'CONTACT: 03364626364\n';
+        receipt += '\n';
+        receipt += '\x1B\x61\x00'; // Left alignment
+        receipt += `Date: ${dateStr} ${timeStr}\n`;
+        if (billCustomerName) {
+          receipt += `Customer: ${billCustomerName}\n`;
+        }
+        if (billCustomerContact) {
+          receipt += `Contact: ${billCustomerContact}\n`;
+        }
+        receipt += '================================\n';
+        receipt += 'Item                    Qty  Amt\n';
+        receipt += '================================\n';
+        
+        toPrint.forEach(p => {
+          // Format for 48-character width thermal printer
+          const itemName = p.name.substring(0, 18).padEnd(18);
+          const qty = p.quantity.toString().padStart(3);
+          const amount = (p.price * p.quantity).toFixed(2).padStart(8);
+          receipt += `${itemName}${qty}${amount}\n`;
+        });
+        
+        receipt += '================================\n';
+        receipt += `Sub Total:${subtotal.toFixed(2).padStart(15)}\n`;
+        receipt += `TOTAL:${subtotal.toFixed(2).padStart(18)}\n`;
+        receipt += '================================\n';
+        receipt += '\x1B\x61\x01'; // Center alignment
+        receipt += 'Thank you for your purchase!\n';
+        receipt += '\n\n\n'; // Feed paper
+        receipt += '\x1B\x69'; // Cut paper
+
+        // Convert to Uint8Array and send
+        const encoder = new TextEncoder();
+        const data = encoder.encode(receipt);
+        
+        await bluetoothCharacteristic.writeValue(data);
+        
+        alert('Receipt sent to Bluetooth printer successfully!');
+        
+        // Clear customer info after printing only if multiple products or user confirms
+        if (toPrint.length > 1) {
+          // For multiple products, ask user if they want to clear customer info
+          if (confirm('Clear customer information for next print?')) {
+            document.getElementById('bill-customer-name').value = '';
+            document.getElementById('bill-customer-contact').value = '';
+          }
+        } else {
+          // For single product, clear automatically
+          document.getElementById('bill-customer-name').value = '';
+          document.getElementById('bill-customer-contact').value = '';
+        }
+        
+      } catch (error) {
+        console.error('Bluetooth print error:', error);
+        alert('Print failed: ' + error.message);
+      }
+    }
+
+    // --- Event Listeners ---
+    document.getElementById('product-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const id = document.getElementById('product-id').value || Date.now().toString();
+      const product = {
+        id,
+        name: document.getElementById('name').value.trim(),
+        category: document.getElementById('category').value.trim(),
+        price: parseFloat(document.getElementById('price').value),
+        quantity: parseInt(document.getElementById('quantity').value, 10),
+        description: document.getElementById('description').value.trim()
+      };
+      if (editingId) {
+        products = products.map(p => p.id === editingId ? product : p);
+      } else {
+        products.push(product);
+      }
+      saveProducts();
+      renderTable(document.getElementById('search').value.toLowerCase());
+      resetForm();
+    });
+
+    document.getElementById('product-table').addEventListener('click', function(e) {
+      const id = e.target.dataset.id;
+      if (e.target.classList.contains('edit-btn')) {
+        const p = products.find(p => p.id === id);
+        document.getElementById('product-id').value = p.id;
+        document.getElementById('name').value = p.name;
+        document.getElementById('category').value = p.category;
+        document.getElementById('price').value = p.price;
+        document.getElementById('quantity').value = p.quantity;
+        document.getElementById('description').value = p.description || '';
+        editingId = id;
+        document.querySelector('#product-form button[type="submit"]').textContent = 'Update Product';
+      }
+      if (e.target.classList.contains('delete-btn')) {
+        if (confirm('Delete this product?')) {
+          products = products.filter(p => p.id !== id);
+          saveProducts();
+          renderTable(document.getElementById('search').value.toLowerCase());
+        }
+      }
+      if (e.target.classList.contains('print-btn')) {
+        showPrintPreview([id]);
+      }
+      if (e.target.classList.contains('bluetooth-print-btn')) {
+        printToBluetooth([id]);
+      }
+    });
+
+    // Bluetooth event listeners
+    document.getElementById('scan-bluetooth').addEventListener('click', scanBluetoothDevices);
+    document.getElementById('connect-bluetooth').addEventListener('click', connectBluetooth);
+    document.getElementById('disconnect-bluetooth').addEventListener('click', disconnectBluetooth);
+
+    document.getElementById('search').addEventListener('input', function(e) {
+      renderTable(e.target.value.toLowerCase());
+    });
+
+    document.getElementById('select-all').addEventListener('change', function(e) {
+      document.querySelectorAll('.row-select').forEach(cb => cb.checked = e.target.checked);
+    });
+
+    document.getElementById('print-selected').addEventListener('click', function() {
+      const selected = Array.from(document.querySelectorAll('.row-select:checked')).map(cb => cb.dataset.id);
+      if (selected.length === 0) {
+        alert('Select at least one product to print.');
+        return;
+      }
+      showPrintPreview(selected);
+    });
+
+        function printProducts(ids) {
+      const toPrint = products.filter(p => ids.includes(p.id));
+      const printArea = document.getElementById('print-area');
+      const now = new Date();
+      const dateStr = now.toLocaleDateString();
+      const timeStr = now.toLocaleTimeString();
+      // Get customer info for this bill
+      const billCustomerName = document.getElementById('bill-customer-name').value.trim();
+      const billCustomerContact = document.getElementById('bill-customer-contact').value.trim();
+      // Calculate subtotal and total
+      let subtotal = 0;
+      toPrint.forEach(p => {
+        subtotal += (p.price * p.quantity);
+      });
+      
+      printArea.innerHTML = `
+        <div style="max-width:400px;margin:0 auto;font-family:'Arial',sans-serif;padding:20px;background:#fff;font-size:14px;line-height:1.6;">
+          <!-- Header Section -->
+          <div style="text-align:center;margin-bottom:25px;border-bottom:3px solid #333;padding-bottom:15px;">
+            <div style="font-size:2.5em;margin-bottom:10px;">📚</div>
+            <div style="font-weight:bold;font-size:1.8em;text-transform:uppercase;margin-bottom:8px;color:#333;">AKRAM BOOK DEPOT</div>
+            <div style="font-size:1.1em;margin-bottom:5px;font-weight:600;color:#666;">Main Bazaar Raiwind</div>
+            <div style="font-size:1.1em;margin-bottom:5px;font-weight:600;color:#666;">Contact: 03364626364</div>
+            <div style="font-size:1em;margin-top:10px;color:#888;border-top:1px solid #ddd;padding-top:10px;">
+              <strong>Date:</strong> ${dateStr} | <strong>Time:</strong> ${timeStr}
+            </div>
+          </div>
+          
+          <!-- Customer Info Section -->
+          ${billCustomerName || billCustomerContact ? `
+          <div style="background:#f8f9fa;padding:15px;margin-bottom:20px;border-radius:8px;border-left:4px solid #007bff;">
+            <div style="font-weight:bold;margin-bottom:8px;color:#333;font-size:1.1em;">CUSTOMER INFORMATION</div>
+            ${billCustomerName ? `<div style="margin-bottom:5px;font-size:1em;"><strong>Name:</strong> ${billCustomerName}</div>` : ''}
+            ${billCustomerContact ? `<div style="font-size:1em;"><strong>Contact:</strong> ${billCustomerContact}</div>` : ''}
+          </div>
+          ` : ''}
+          
+          <!-- Items Section -->
+          <div style="margin-bottom:25px;">
+            <div style="font-weight:bold;margin-bottom:15px;color:#333;font-size:1.2em;border-bottom:2px solid #333;padding-bottom:8px;">ITEMS PURCHASED</div>
+            <table style="width:100%;border-collapse:collapse;font-size:13px;border:1px solid #ddd;">
+              <thead>
+                <tr style="background:#f8f9fa;border-bottom:2px solid #333;">
+                  <th style="text-align:left;padding:12px 8px;font-weight:bold;color:#333;border-right:1px solid #ddd;">ITEM</th>
+                  <th style="text-align:center;padding:12px 8px;font-weight:bold;color:#333;border-right:1px solid #ddd;">QTY</th>
+                  <th style="text-align:right;padding:12px 8px;font-weight:bold;color:#333;">AMOUNT</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${toPrint.map((p, index) => `
+                  <tr style="border-bottom:1px solid #eee;background:${index % 2 === 0 ? '#f8f9fa' : '#fff'};">
+                    <td style="padding:10px 8px;font-weight:600;color:#333;border-right:1px solid #eee;">${p.name}</td>
+                    <td style="text-align:center;padding:10px 8px;font-weight:500;color:#666;border-right:1px solid #eee;">${p.quantity}</td>
+                    <td style="text-align:right;padding:10px 8px;font-weight:bold;color:#007bff;">Rs. ${(p.price * p.quantity).toFixed(2)}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+          
+          <!-- Totals Section -->
+          <div style="background:#f8f9fa;padding:20px;margin-bottom:20px;border-radius:8px;border:2px solid #e9ecef;">
+            <div style="font-weight:bold;margin-bottom:15px;color:#333;font-size:1.2em;border-bottom:2px solid #333;padding-bottom:8px;">BILL SUMMARY</div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:10px;font-size:1.1em;">
+              <span style="font-weight:600;color:#666;">Sub Total:</span>
+              <span style="font-weight:bold;color:#333;">Rs. ${subtotal.toFixed(2)}</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-weight:bold;font-size:1.3em;border-top:2px solid #333;padding-top:10px;color:#007bff;">
+              <span style="text-transform:uppercase;">TOTAL AMOUNT:</span>
+              <span style="font-size:1.4em;">Rs. ${subtotal.toFixed(2)}</span>
+            </div>
+          </div>
+          
+                     <!-- Payment Section -->
+           <div style="background:#e8f5e8;padding:15px;margin-bottom:20px;border-radius:8px;border:2px solid #c3e6c3;">
+             <div style="font-weight:bold;margin-bottom:10px;color:#2d5a2d;font-size:1.1em;border-bottom:1px solid #c3e6c3;padding-bottom:5px;">PAYMENT DETAILS</div>
+             <div style="display:flex;justify-content:space-between;font-size:1em;">
+               <span style="font-weight:600;color:#2d5a2d;">Amount Paid:</span>
+               <span style="font-weight:bold;color:#2d5a2d;">Rs. ${subtotal.toFixed(2)}</span>
+             </div>
+           </div>
+          
+          <!-- Footer Section -->
+          <div style="text-align:center;margin-top:25px;padding-top:20px;border-top:3px solid #333;">
+            <div style="font-size:1.2em;font-weight:bold;margin-bottom:8px;text-transform:uppercase;color:#007bff;">Thank You For Your Purchase!</div>
+            <div style="font-size:1em;margin-bottom:5px;font-weight:600;color:#666;">Please Visit Again</div>
+            <div style="font-size:0.9em;color:#888;border-top:1px solid #ddd;padding-top:10px;">Powered by UG Billing System</div>
+          </div>
+        </div>
+      `;
+      printArea.style.display = 'block';
+      window.print();
+      printArea.style.display = 'none';
+      // Clear customer info after printing only if multiple products or user confirms
+      if (toPrint.length > 1) {
+        // For multiple products, ask user if they want to clear customer info
+        if (confirm('Clear customer information for next print?')) {
+          document.getElementById('bill-customer-name').value = '';
+          document.getElementById('bill-customer-contact').value = '';
+        }
+      } else {
+        // For single product, clear automatically
+        document.getElementById('bill-customer-name').value = '';
+        document.getElementById('bill-customer-contact').value = '';
+      }
+    }
+
+    // --- Print Preview Functions ---
+    let currentPrintData = null;
+    
+    function showPrintPreview(ids) {
+      const toPrint = products.filter(p => ids.includes(p.id));
+      const now = new Date();
+      const dateStr = now.toLocaleDateString();
+      const timeStr = now.toLocaleTimeString();
+      const billCustomerName = document.getElementById('bill-customer-name').value.trim();
+      const billCustomerContact = document.getElementById('bill-customer-contact').value.trim();
+      
+      // Calculate subtotal and total
+      let subtotal = 0;
+      toPrint.forEach(p => {
+        subtotal += (p.price * p.quantity);
+      });
+      
+      // Store current print data for later use
+      currentPrintData = {
+        ids: ids,
+        toPrint: toPrint,
+        dateStr: dateStr,
+        timeStr: timeStr,
+        billCustomerName: billCustomerName,
+        billCustomerContact: billCustomerContact,
+        subtotal: subtotal
+      };
+      
+      const previewContent = document.getElementById('print-preview-content');
+      previewContent.innerHTML = `
+        <div style="max-width:400px;margin:0 auto;font-family:'Arial',sans-serif;padding:20px;background:#fff;font-size:14px;line-height:1.6;">
+          <!-- Header Section -->
+          <div style="text-align:center;margin-bottom:25px;border-bottom:3px solid #333;padding-bottom:15px;">
+            <div style="font-size:2.5em;margin-bottom:10px;">📚</div>
+            <div style="font-weight:bold;font-size:1.8em;text-transform:uppercase;margin-bottom:8px;color:#333;">AKRAM BOOK DEPOT</div>
+            <div style="font-size:1.1em;margin-bottom:5px;font-weight:600;color:#666;">Main Bazaar Raiwind</div>
+            <div style="font-size:1.1em;margin-bottom:5px;font-weight:600;color:#666;">Contact: 03364626364</div>
+            <div style="font-size:1em;margin-top:10px;color:#888;border-top:1px solid #ddd;padding-top:10px;">
+              <strong>Date:</strong> ${dateStr} | <strong>Time:</strong> ${timeStr}
+            </div>
+          </div>
+          
+          <!-- Customer Info Section -->
+          ${billCustomerName || billCustomerContact ? `
+          <div style="background:#f8f9fa;padding:15px;margin-bottom:20px;border-radius:8px;border-left:4px solid #007bff;">
+            <div style="font-weight:bold;margin-bottom:8px;color:#333;font-size:1.1em;">CUSTOMER INFORMATION</div>
+            ${billCustomerName ? `<div style="margin-bottom:5px;font-size:1em;"><strong>Name:</strong> ${billCustomerName}</div>` : ''}
+            ${billCustomerContact ? `<div style="font-size:1em;"><strong>Contact:</strong> ${billCustomerContact}</div>` : ''}
+          </div>
+          ` : ''}
+          
+          <!-- Items Section -->
+          <div style="margin-bottom:25px;">
+            <div style="font-weight:bold;margin-bottom:15px;color:#333;font-size:1.2em;border-bottom:2px solid #333;padding-bottom:8px;">ITEMS PURCHASED</div>
+            <table style="width:100%;border-collapse:collapse;font-size:13px;border:1px solid #ddd;">
+              <thead>
+                <tr style="background:#f8f9fa;border-bottom:2px solid #333;">
+                  <th style="text-align:left;padding:12px 8px;font-weight:bold;color:#333;border-right:1px solid #ddd;">ITEM</th>
+                  <th style="text-align:center;padding:12px 8px;font-weight:bold;color:#333;border-right:1px solid #ddd;">QTY</th>
+                  <th style="text-align:right;padding:12px 8px;font-weight:bold;color:#333;">AMOUNT</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${toPrint.map((p, index) => `
+                  <tr style="border-bottom:1px solid #eee;background:${index % 2 === 0 ? '#f8f9fa' : '#fff'};">
+                    <td style="padding:10px 8px;font-weight:600;color:#333;border-right:1px solid #eee;">${p.name}</td>
+                    <td style="text-align:center;padding:10px 8px;font-weight:500;color:#666;border-right:1px solid #eee;">${p.quantity}</td>
+                    <td style="text-align:right;padding:10px 8px;font-weight:bold;color:#007bff;">Rs. ${(p.price * p.quantity).toFixed(2)}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+          
+          <!-- Totals Section -->
+          <div style="background:#f8f9fa;padding:20px;margin-bottom:20px;border-radius:8px;border:2px solid #e9ecef;">
+            <div style="font-weight:bold;margin-bottom:15px;color:#333;font-size:1.2em;border-bottom:2px solid #333;padding-bottom:8px;">BILL SUMMARY</div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:10px;font-size:1.1em;">
+              <span style="font-weight:600;color:#666;">Sub Total:</span>
+              <span style="font-weight:bold;color:#333;">Rs. ${subtotal.toFixed(2)}</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-weight:bold;font-size:1.3em;border-top:2px solid #333;padding-top:10px;color:#007bff;">
+              <span style="text-transform:uppercase;">TOTAL AMOUNT:</span>
+              <span style="font-size:1.4em;">Rs. ${subtotal.toFixed(2)}</span>
+            </div>
+          </div>
+          
+          <!-- Payment Section -->
+          <div style="background:#e8f5e8;padding:15px;margin-bottom:20px;border-radius:8px;border:2px solid #c3e6c3;">
+            <div style="font-weight:bold;margin-bottom:10px;color:#2d5a2d;font-size:1.1em;border-bottom:1px solid #c3e6c3;padding-bottom:5px;">PAYMENT DETAILS</div>
+            <div style="display:flex;justify-content:space-between;font-size:1em;">
+              <span style="font-weight:600;color:#2d5a2d;">Amount Paid:</span>
+              <span style="font-weight:bold;color:#2d5a2d;">Rs. ${subtotal.toFixed(2)}</span>
+            </div>
+          </div>
+          
+          <!-- Footer Section -->
+          <div style="text-align:center;margin-top:25px;padding-top:20px;border-top:3px solid #333;">
+            <div style="font-size:1.2em;font-weight:bold;margin-bottom:8px;text-transform:uppercase;color:#007bff;">Thank You For Your Purchase!</div>
+            <div style="font-size:1em;margin-bottom:5px;font-weight:600;color:#666;">Please Visit Again</div>
+            <div style="font-size:0.9em;color:#888;border-top:1px solid #ddd;padding-top:10px;">Powered by UG Billing System</div>
+          </div>
+        </div>
+      `;
+      
+      document.getElementById('print-preview-modal').style.display = 'block';
+    }
+    
+    function closePrintPreview() {
+      document.getElementById('print-preview-modal').style.display = 'none';
+      currentPrintData = null;
+    }
+    
+    // Close modal when clicking outside
+    document.getElementById('print-preview-modal').addEventListener('click', function(e) {
+      if (e.target === this) {
+        closePrintPreview();
+      }
+    });
+    
+    // Close modal with Escape key
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && document.getElementById('print-preview-modal').style.display === 'block') {
+        closePrintPreview();
+      }
+    });
+    
+    function confirmPrint() {
+      if (currentPrintData) {
+        // Use the stored data to print
+        const { ids, toPrint, dateStr, timeStr, billCustomerName, billCustomerContact, subtotal } = currentPrintData;
+        
+        const printArea = document.getElementById('print-area');
+        printArea.innerHTML = `
+          <div style="max-width:400px;margin:0 auto;font-family:'Arial',sans-serif;padding:20px;background:#fff;font-size:14px;line-height:1.6;">
+            <!-- Header Section -->
+            <div style="text-align:center;margin-bottom:25px;border-bottom:3px solid #333;padding-bottom:15px;">
+              <div style="font-size:2.5em;margin-bottom:10px;">📚</div>
+              <div style="font-weight:bold;font-size:1.8em;text-transform:uppercase;margin-bottom:8px;color:#333;">AKRAM BOOK DEPOT</div>
+              <div style="font-size:1.1em;margin-bottom:5px;font-weight:600;color:#666;">Main Bazaar Raiwind</div>
+              <div style="font-size:1.1em;margin-bottom:5px;font-weight:600;color:#666;">Contact: 03364626364</div>
+              <div style="font-size:1em;margin-top:10px;color:#888;border-top:1px solid #ddd;padding-top:10px;">
+                <strong>Date:</strong> ${dateStr} | <strong>Time:</strong> ${timeStr}
+              </div>
+            </div>
+            
+            <!-- Customer Info Section -->
+            ${billCustomerName || billCustomerContact ? `
+            <div style="background:#f8f9fa;padding:15px;margin-bottom:20px;border-radius:8px;border-left:4px solid #007bff;">
+              <div style="font-weight:bold;margin-bottom:8px;color:#333;font-size:1.1em;">CUSTOMER INFORMATION</div>
+              ${billCustomerName ? `<div style="margin-bottom:5px;font-size:1em;"><strong>Name:</strong> ${billCustomerName}</div>` : ''}
+              ${billCustomerContact ? `<div style="font-size:1em;"><strong>Contact:</strong> ${billCustomerContact}</div>` : ''}
+            </div>
+            ` : ''}
+            
+            <!-- Items Section -->
+            <div style="margin-bottom:25px;">
+              <div style="font-weight:bold;margin-bottom:15px;color:#333;font-size:1.2em;border-bottom:2px solid #333;padding-bottom:8px;">ITEMS PURCHASED</div>
+              <table style="width:100%;border-collapse:collapse;font-size:13px;border:1px solid #ddd;">
+                <thead>
+                  <tr style="background:#f8f9fa;border-bottom:2px solid #333;">
+                    <th style="text-align:left;padding:12px 8px;font-weight:bold;color:#333;border-right:1px solid #ddd;">ITEM</th>
+                    <th style="text-align:center;padding:12px 8px;font-weight:bold;color:#333;border-right:1px solid #ddd;">QTY</th>
+                    <th style="text-align:right;padding:12px 8px;font-weight:bold;color:#333;">AMOUNT</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${toPrint.map((p, index) => `
+                    <tr style="border-bottom:1px solid #eee;background:${index % 2 === 0 ? '#f8f9fa' : '#fff'};">
+                      <td style="padding:10px 8px;font-weight:600;color:#333;border-right:1px solid #eee;">${p.name}</td>
+                      <td style="text-align:center;padding:10px 8px;font-weight:500;color:#666;border-right:1px solid #eee;">${p.quantity}</td>
+                      <td style="text-align:right;padding:10px 8px;font-weight:bold;color:#007bff;">Rs. ${(p.price * p.quantity).toFixed(2)}</td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
+            
+            <!-- Totals Section -->
+            <div style="background:#f8f9fa;padding:20px;margin-bottom:20px;border-radius:8px;border:2px solid #e9ecef;">
+              <div style="font-weight:bold;margin-bottom:15px;color:#333;font-size:1.2em;border-bottom:2px solid #333;padding-bottom:8px;">BILL SUMMARY</div>
+              <div style="display:flex;justify-content:space-between;margin-bottom:10px;font-size:1.1em;">
+                <span style="font-weight:600;color:#666;">Sub Total:</span>
+                <span style="font-weight:bold;color:#333;">Rs. ${subtotal.toFixed(2)}</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;font-weight:bold;font-size:1.3em;border-top:2px solid #333;padding-top:10px;color:#007bff;">
+                <span style="text-transform:uppercase;">TOTAL AMOUNT:</span>
+                <span style="font-size:1.4em;">Rs. ${subtotal.toFixed(2)}</span>
+              </div>
+            </div>
+            
+            <!-- Payment Section -->
+            <div style="background:#e8f5e8;padding:15px;margin-bottom:20px;border-radius:8px;border:2px solid #c3e6c3;">
+              <div style="font-weight:bold;margin-bottom:10px;color:#2d5a2d;font-size:1.1em;border-bottom:1px solid #c3e6c3;padding-bottom:5px;">PAYMENT DETAILS</div>
+              <div style="display:flex;justify-content:space-between;font-size:1em;">
+                <span style="font-weight:600;color:#2d5a2d;">Amount Paid:</span>
+                <span style="font-weight:bold;color:#2d5a2d;">Rs. ${subtotal.toFixed(2)}</span>
+              </div>
+            </div>
+            
+            <!-- Footer Section -->
+            <div style="text-align:center;margin-top:25px;padding-top:20px;border-top:3px solid #333;">
+              <div style="font-size:1.2em;font-weight:bold;margin-bottom:8px;text-transform:uppercase;color:#007bff;">Thank You For Your Purchase!</div>
+              <div style="font-size:1em;margin-bottom:5px;font-weight:600;color:#666;">Please Visit Again</div>
+              <div style="font-size:0.9em;color:#888;border-top:1px solid #ddd;padding-top:10px;">Powered by UG Billing System</div>
+            </div>
+          </div>
+        `;
+        
+        printArea.style.display = 'block';
+        window.print();
+        printArea.style.display = 'none';
+        
+        // Clear customer info after printing
+        if (toPrint.length > 1) {
+          if (confirm('Clear customer information for next print?')) {
+            document.getElementById('bill-customer-name').value = '';
+            document.getElementById('bill-customer-contact').value = '';
+          }
+        } else {
+          document.getElementById('bill-customer-name').value = '';
+          document.getElementById('bill-customer-contact').value = '';
+        }
+        
+        closePrintPreview();
+      }
+    }
+    
+    // --- Initial Render ---
+    renderTable();
+  </script>
+</body>
+</html> 
+
